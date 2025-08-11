@@ -1,4 +1,3 @@
-
 name: Build Justice APK
 
 on:
@@ -24,10 +23,14 @@ jobs:
         pip install buildozer
         pip install cython
 
-    - name: Install Android SDK build tools and accept licenses
-      run: |
-        yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;36.0.0" "platforms;android-33"
-        yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        sdk-version: '33'
+        build-tools-version: '36.0.0'
+
+    - name: Accept Android SDK licenses
+      run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
 
     - name: Build APK
       run: |
