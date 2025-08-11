@@ -21,6 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install buildozer
+        pip install cython
 
     - name: Build APK
       run: |
