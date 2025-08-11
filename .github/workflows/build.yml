@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ANDROID_SDK_ROOT: ${{ runner.tool_cache }}/android-sdk
+      ANDROID_SDK_ROOT: $HOME/android-sdk
 
     steps:
     - name: Checkout repository
@@ -22,17 +22,15 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
-      with:
-        sdk-version: '33'
-        build-tools-version: '36.0.0'
-
-    - name: Accept Android SDK licenses manually
+    - name: Download and setup Android SDK command line tools
       run: |
-        mkdir -p $ANDROID_SDK_ROOT/licenses
-        echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_SDK_ROOT/licenses/android-sdk-license
-        echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license
+        mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+        curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+        unzip sdk-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+        mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+        rm sdk-tools.zip
+        yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
+        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;36.0.0"
 
     - name: Install build dependencies
       run: |
